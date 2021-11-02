@@ -88,7 +88,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
-  p->priority = 10;   // lab 2
+  p->priority = 10;   // lab 2, need to initialize priority to 10
 
   release(&ptable.lock);
 
@@ -346,7 +346,7 @@ scheduler(void)
       if (p->state != RUNNABLE)
         continue;
       if(p->priority != min) { //e.c 1
-        p->priority = p->priority - 1;
+        p->priority = p->priority - 1; //subtract to increase priority (e.c 1)
         continue;
       }
       else {
@@ -555,4 +555,10 @@ void
 pri(int priority)
 {
   myproc()->priority = priority;
+}
+
+int
+get(void)
+{
+  return myproc()->priority;
 }

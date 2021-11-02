@@ -97,3 +97,9 @@ sys_pri(void)
   argint(0, &priority);
   pri(priority);
 }
+
+void 
+sys_get(void)
+{
+  get();
+}
