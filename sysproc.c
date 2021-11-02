@@ -90,10 +90,13 @@ sys_uptime(void)
   return xticks;
 }
 
-//new function
-int
-sys_pri(void)
+void
+sys_pri(void)  //lab 2
 {
-  int prio;
-  return pri(argint(0, &prio));
+  int priority;
+  argint(0, &priority);
+  //if(argint(0, &priority) < 0)
+    //return -1;
+  pri(priority);
+  //return 0;
 }

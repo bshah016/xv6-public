@@ -88,7 +88,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
-  p->priority = 10; //Brij
+  p->priority = 10;   // lab 2
 
   release(&ptable.lock);
 
@@ -326,38 +326,30 @@ scheduler(void)
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
+    int min;
   
-  for (;;)
-  {
+  for(;;){
     // Enable interrupts on this processor.
     sti();
 
 
+   min = 31;
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
-    int min = 31;
-    //sets the min priority by iterating process table
-    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-    {
-        if (p->priority <= min && p->state == RUNNABLE) 
-          min = p->priority;
+    //finding min priority (SJF)
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if(p->priority <= min && p->state == RUNNABLE){
+        min = p->priority;
+      }
     }
-
-
-    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-    {
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if (p->state != RUNNABLE)
         continue;
-      if (p->priority != min) //e.c 1
-      {
+      if(p->priority != min) { //e.c 1
         p->priority = p->priority - 1;
-        continue; 
+        continue;
       }
-      else //e.c 1
-      {
-        p->priority = p->priority + 1;
-      }
-      
+      p->priority = p->priority + 1; //e.c 1
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
@@ -367,12 +359,27 @@ scheduler(void)
 
       swtch(&(c->scheduler), p->context);
       switchkvm();
-
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       c->proc = 0;
     }
+    /*
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if(p->priority  == highestpriority && flag == 0){
+        if(p->priority < 32){
+          temp = p->priority + 1;
+          setpriority(temp);
+        }
+        flag = 1;
+      }
+      else if (p->priority != 1){
+        temp = p->priority - 1;
+        setpriority(temp);
+      }
+    }
+    */
     release(&ptable.lock);
+
   }
 }
 
@@ -555,9 +562,11 @@ procdump(void)
 }
 
 
-int pri(int newPriority) 
+/* lab 2 start*/
+void
+pri(int priority)
 {
-  struct proc *curproc = myproc();
-  curproc->priority = newPriority;
-  return 0;
+  //is the current process calling this system call the myproc()?
+  myproc()->priority = priority;
 }
+/* lab 2 ends*/
