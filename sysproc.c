@@ -89,3 +89,11 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+//new function
+int
+sys_pri(void)
+{
+  int prio;
+  return pri(argint(0, &prio));
+}

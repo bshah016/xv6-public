@@ -88,6 +88,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->priority = 10; //Brij
 
   release(&ptable.lock);
 
@@ -326,16 +327,37 @@ scheduler(void)
   struct cpu *c = mycpu();
   c->proc = 0;
   
-  for(;;){
+  for (;;)
+  {
     // Enable interrupts on this processor.
     sti();
 
+
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
-        continue;
+    int min = 31;
+    //sets the min priority by iterating process table
+    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+    {
+        if (p->priority <= min && p->state == RUNNABLE) 
+          min = p->priority;
+    }
 
+
+    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+    {
+      if (p->state != RUNNABLE)
+        continue;
+      if (p->priority != min) //e.c 1
+      {
+        p->priority = p->priority - 1;
+        continue; 
+      }
+      else //e.c 1
+      {
+        p->priority = p->priority + 1;
+      }
+      
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
@@ -351,7 +373,6 @@ scheduler(void)
       c->proc = 0;
     }
     release(&ptable.lock);
-
   }
 }
 
@@ -531,4 +552,12 @@ procdump(void)
     }
     cprintf("\n");
   }
+}
+
+
+int pri(int newPriority) 
+{
+  struct proc *curproc = myproc();
+  curproc->priority = newPriority;
+  return 0;
 }
