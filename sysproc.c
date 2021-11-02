@@ -91,12 +91,9 @@ sys_uptime(void)
 }
 
 void
-sys_pri(void)  //lab 2
+sys_pri(void)
 {
   int priority;
   argint(0, &priority);
-  //if(argint(0, &priority) < 0)
-    //return -1;
   pri(priority);
-  //return 0;
 }

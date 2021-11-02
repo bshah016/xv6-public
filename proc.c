@@ -562,11 +562,9 @@ procdump(void)
 }
 
 
-/* lab 2 start*/
+
 void
 pri(int priority)
 {
-  //is the current process calling this system call the myproc()?
   myproc()->priority = priority;
 }
-/* lab 2 ends*/
