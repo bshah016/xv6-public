@@ -333,23 +333,26 @@ scheduler(void)
     sti();
 
 
-   min = 31;
+    min = 31;
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     //finding min priority (SJF)
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->priority <= min && p->state == RUNNABLE){
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+      if(p->priority <= min && p->state == RUNNABLE) {
         min = p->priority;
       }
     }
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
       if (p->state != RUNNABLE)
         continue;
       if(p->priority != min) { //e.c 1
         p->priority = p->priority - 1;
         continue;
       }
-      p->priority = p->priority + 1; //e.c 1
+      else {
+        p->priority = p->priority + 1; //e.c 1
+      }
+      
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
@@ -363,21 +366,6 @@ scheduler(void)
       // It should have changed its p->state before coming back.
       c->proc = 0;
     }
-    /*
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->priority  == highestpriority && flag == 0){
-        if(p->priority < 32){
-          temp = p->priority + 1;
-          setpriority(temp);
-        }
-        flag = 1;
-      }
-      else if (p->priority != 1){
-        temp = p->priority - 1;
-        setpriority(temp);
-      }
-    }
-    */
     release(&ptable.lock);
 
   }
